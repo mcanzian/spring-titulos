@@ -12,7 +12,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
@@ -23,13 +28,19 @@ public class Titulo {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@NotEmpty(message="Descrição deve ser informado")
+	@Size(max=50, message="Descrição deve ter no máximo 50 caracteres")
 	private String descricao;
 
+	@NotNull(message="Data de vencimento deve ser informado")
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "data_vencimento")
 	private Date dataVencimento;
 
+	@NotNull(message="Valor deve ser informado")
+	@DecimalMin(value="0.01", message="Valor não deve ser menor que R$ 0,01")
+	@DecimalMax(value="999999.99", message="Valor não deve ser maior que R$ 999.999,99")
 	@NumberFormat(pattern = "#,##0.00")
 	private BigDecimal valor;
 
@@ -74,6 +85,10 @@ public class Titulo {
 
 	public void setStatus(StatusTitulo status) {
 		this.status = status;
+	}
+	
+	public boolean isPendente() {
+		return StatusTitulo.PENDENTE.equals(this.status);
 	}
 
 	@Override
