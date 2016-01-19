@@ -8,6 +8,8 @@
 </head>
 
 <section layout:fragment="conteudo">
+	<div layout:include="MensagemSucesso"></div>
+
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<div class="clearfix">
@@ -40,8 +42,14 @@
 							th:classappend="${titulo.pendente ? 'label-danger' : 'label-success'}"></span>
 						</td>
 						<td class="text-center">
-							<a class="btn btn-link btn-xs" th:href="@{/titulos/{id}(id=${titulo.id})}"> 
+							<a class="btn btn-link btn-xs" th:href="@{/titulos/{id}(id=${titulo.id})}" 
+								title="Editar" rel="tooltip" data-placement="top"> 
 								<span class="glyphicon glyphicon-pencil"></span>
+							</a> 
+							<a class="btn btn-link btn-xs" data-toggle="modal" data-target="#confirmarExclusaoModal" 
+								th:attr="data-id=${titulo.id}, data-descricao=${titulo.descricao}"
+								title="Editar" rel="tooltip" data-placement="top"> 
+								<span class="glyphicon glyphicon-remove"></span>
 							</a>
 						</td>
 					</tr>
@@ -51,6 +59,9 @@
 				</tbody>
 			</table>
 		</div>
+		
+		<div layout:include="ModalConfirmarExclusao"></div>
+		
 	</div>
 </section>
 
