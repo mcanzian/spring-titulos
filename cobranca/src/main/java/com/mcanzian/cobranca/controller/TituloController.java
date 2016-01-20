@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mcanzian.cobranca.model.StatusTitulo;
 import com.mcanzian.cobranca.model.Titulo;
-import com.mcanzian.cobranca.repository.TituloRepository;
+import com.mcanzian.cobranca.repository.filter.TituloFilter;
 import com.mcanzian.cobranca.service.CadastroTituloService;
 
 @Controller
@@ -25,9 +25,6 @@ import com.mcanzian.cobranca.service.CadastroTituloService;
 public class TituloController {
 	
 	private static String CADASTRO_VIEW = "CadastroTitulo";
-	
-	@Autowired
-	private TituloRepository titulos;
 	
 	@Autowired
 	private CadastroTituloService cadastroTituloService;
@@ -57,10 +54,10 @@ public class TituloController {
 	}
 	
 	@RequestMapping
-	public ModelAndView listar() {
+	public ModelAndView listar(@ModelAttribute("filtro") TituloFilter filtro) {
 		ModelAndView mv = new ModelAndView("ListaTitulos");
 		
-		List<Titulo> todosTitulos = titulos.findAll();
+		List<Titulo> todosTitulos = cadastroTituloService.filtar(filtro);
 		mv.addObject("titulos", todosTitulos);
 		
 		return mv;
@@ -81,14 +78,15 @@ public class TituloController {
 		attributes.addFlashAttribute("mensagemSucesso", "Título excluido com sucesso.");
 		return "redirect:/titulos";
 	}
+
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}/atualizar-status")
+	public @ResponseBody String atualizarStatus(@PathVariable Long id) {
+		return cadastroTituloService.atualizarStatus(id);
+	}
 	
 	@ModelAttribute("todosStatusTitulo")
 	public List<StatusTitulo> todosStatusTitulo() {
 		return Arrays.asList(StatusTitulo.values());
 	}
-	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}/atualizar-status")
-	public @ResponseBody String atualizarStatus(@PathVariable Long id) {
-		return cadastroTituloService.atualizarStatus(id);
-	}
+
 }

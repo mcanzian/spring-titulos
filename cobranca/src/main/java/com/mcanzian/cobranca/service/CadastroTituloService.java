@@ -1,5 +1,7 @@
 package com.mcanzian.cobranca.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.mcanzian.cobranca.model.StatusTitulo;
 import com.mcanzian.cobranca.model.Titulo;
 import com.mcanzian.cobranca.repository.TituloRepository;
+import com.mcanzian.cobranca.repository.filter.TituloFilter;
 
 @Service
 public class CadastroTituloService {
@@ -31,7 +34,19 @@ public class CadastroTituloService {
 		titulo.setStatus(StatusTitulo.RECEBIDO);
 		titulos.save(titulo);
 		
-		return StatusTitulo.RECEBIDO.name();
+		return StatusTitulo.RECEBIDO.getDescricao();
+	}
+	
+	public List<Titulo> filtar(TituloFilter filtro) {
+		String descricao;
+		
+		if (filtro.getDescricao() == null) {
+			descricao = "%";
+		} else {
+			descricao = filtro.getDescricao();
+		}
+		
+		return titulos.findByDescricaoContaining(descricao);
 	}
 	
 }
