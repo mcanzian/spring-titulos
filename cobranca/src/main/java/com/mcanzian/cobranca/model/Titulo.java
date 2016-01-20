@@ -30,21 +30,24 @@ public class Titulo {
 
 	@NotEmpty(message="Descrição deve ser informado")
 	@Size(max=50, message="Descrição deve ter no máximo 50 caracteres")
+	@Column(length=50, nullable=false)
 	private String descricao;
 
 	@NotNull(message="Data de vencimento deve ser informado")
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "data_vencimento")
+	@Column(name = "data_vencimento", nullable=false)
 	private Date dataVencimento;
 
 	@NotNull(message="Valor deve ser informado")
 	@DecimalMin(value="0.01", message="Valor não deve ser menor que R$ 0,01")
 	@DecimalMax(value="999999.99", message="Valor não deve ser maior que R$ 999.999,99")
 	@NumberFormat(pattern = "#,##0.00")
+	@Column(nullable=false)
 	private BigDecimal valor;
 
 	@Enumerated(EnumType.STRING)
+	@Column(length=10, nullable=false)
 	private StatusTitulo status;
 
 	public Long getId() {

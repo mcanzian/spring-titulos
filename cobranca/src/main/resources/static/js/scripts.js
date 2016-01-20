@@ -1,3 +1,8 @@
+$(function() {
+	$('[rel="tooltip"]').tooltip();
+	$('.currency').maskMoney({decimal: ',', thousands: '.', allowZero: true});
+});
+
 $('.alert-success').fadeTo(3500, 500).slideUp(500, function() {
     $(this).alert('close');
 });
@@ -20,6 +25,20 @@ $('#confirmarExclusaoModal').on('show.bs.modal', function(event) {
 	span.html('Tem certeza que deseja excluir o título <strong>'+descricao+'</strong>?');
 });
 
-$(function() {
-	$('[rel="tooltip"]').tooltip();
+$('.atualizar-status').on('click', function(event){
+	event.preventDefault();
+	
+	var botao = $(event.currentTarget);
+	var urlDestino = botao.attr('href');
+	
+	var response = $.ajax({
+		url: urlDestino,
+		type: 'PUT'
+	});
+	
+	response.done(function(e) {
+		var id = botao.data('id');
+		$('[data-role='+id+']').removeClass('label-danger').addClass('label-success').html(e);
+		botao.hide();
+	});
 });

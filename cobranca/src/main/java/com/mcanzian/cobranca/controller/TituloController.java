@@ -11,20 +11,27 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mcanzian.cobranca.model.StatusTitulo;
 import com.mcanzian.cobranca.model.Titulo;
 import com.mcanzian.cobranca.repository.TituloRepository;
+import com.mcanzian.cobranca.service.CadastroTituloService;
 
 @Controller
 @RequestMapping("/titulos")
 public class TituloController {
 	
+	private static String CADASTRO_VIEW = "CadastroTitulo";
+	
 	@Autowired
 	private TituloRepository titulos;
-	private static String CADASTRO_VIEW = "CadastroTitulo";
+	
+	@Autowired
+	private CadastroTituloService cadastroTituloService;
+	
 
 	@RequestMapping("/novo")
 	public ModelAndView novo() {
@@ -38,7 +45,12 @@ public class TituloController {
 		if (errors.hasErrors())
 			return CADASTRO_VIEW;
 		
-		titulos.save(titulo);
+		try {
+			cadastroTituloService.salvar(titulo);
+		} catch (IllegalArgumentException e) {
+			errors.rejectValue("dataVencimento", null, e.getMessage());
+			return CADASTRO_VIEW;
+		}
 		attributes.addFlashAttribute("mensagemSucesso", "Título salvo com sucessso.");
 		
 		return "redirect:/titulos/novo";
@@ -65,7 +77,7 @@ public class TituloController {
 	
 	@RequestMapping(method = RequestMethod.DELETE, value = "{id}")
 	public String excluir(@PathVariable Long id, RedirectAttributes attributes) {
-		titulos.delete(id);
+		cadastroTituloService.excluir(id);
 		attributes.addFlashAttribute("mensagemSucesso", "Título excluido com sucesso.");
 		return "redirect:/titulos";
 	}
@@ -75,4 +87,8 @@ public class TituloController {
 		return Arrays.asList(StatusTitulo.values());
 	}
 	
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}/atualizar-status")
+	public @ResponseBody String atualizarStatus(@PathVariable Long id) {
+		return cadastroTituloService.atualizarStatus(id);
+	}
 }
